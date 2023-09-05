@@ -13,32 +13,67 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-livros = [
+books = [
     {
         'id': 1,
-        'titulo': 'O Senhor dos Anéis - A Sociedade do Anel',
-        'autor': 'J.R.R Tokien',
+        'title': 'O Senhor dos Anéis - A Sociedade do Anel',
+        'author': 'J.R.R Tokien',
     },
     {
         'id': 2,
-        'titulo': 'O Senhor dos Anéis - As Duas Torres',
-        'autor': 'J.R.R Tokien',
+        'title': 'O Senhor dos Anéis - As Duas Torres',
+        'author': 'J.R.R Tokien',
     },
     {
         'id': 3,
-        'titulo': 'O Senhor dos Anéis - O Retorno do Rei',
-        'autor': 'J.R.R Tokien',
+        'title': 'O Senhor dos Anéis - O Retorno do Rei',
+        'author': 'J.R.R Tokien',
     }
 ]
+
 # Consultar(todos)
 
 
-@app.route('/livros')
-def obter_livros():
-    return jsonify(livros)
+@app.route('/books', methods=['GET'])
+def get_books():
+    return jsonify(books)
+
+# Criar livro
+
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    new_book = request.get_json()
+    books.append(new_book)
+    return jsonify(new_book)
 
 
 # Consultar(id)
+@app.route('/books/<int:id>', methods=['GET'])
+def get_books_by_id(id):
+    for book in books:
+        if book.get('id') == id:
+            return jsonify(book)
+
+
 # Editar
+@app.route('/books/<int:id>', methods=['PUT'])
+def edit_book_by_id(id):
+    book_edited = request.get_json()
+    for index, book in enumerate(books):
+        if book.get('id') == id:
+            books[index].update(book_edited)
+            return jsonify(books[index])
+
+
 # Excluir
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete_book(id):
+    for index, book in enumerate(books):
+        if book.get('id') == id:
+            del books[index]
+
+    return jsonify(books)
+
+
 app.run(port=5000, host='localhost', debug=True)
